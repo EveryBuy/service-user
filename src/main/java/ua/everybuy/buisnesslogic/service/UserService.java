@@ -3,76 +3,67 @@ package ua.everybuy.buisnesslogic.service;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
+import ua.everybuy.errorhandling.exception.UserNotFoundException;
+import ua.everybuy.routing.model.dto.AuthUserInfoDto;
 import ua.everybuy.routing.model.dto.UserDTO;
 import ua.everybuy.routing.model.dto.response.StatusResponse;
-import ua.everybuy.routing.model.dto.response.ValidResponse;
-import ua.everybuy.routing.model.inputdto.UserInputDTO;
+import ua.everybuy.routing.model.inputdto.UserUpdateDTO;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ua.everybuy.routing.model.inputdto.UserUpdateDTO;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final RequestSenderService requestSenderService;
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public void createUser(long userId) {
+        User user = new User(userId); // Consider adding required fields
+        userRepository.save(user);
     }
 
-    public User saveUser(UserInputDTO userDTO){
-        User user  = new User();
-        user.setId(userDTO.id());
-        return userRepository.save(user);
+    public User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public User getUserById(long id){
-        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with id: " + id + " not found"));
-    }
-    public User getUserByUserName(String username){
-        return userRepository.findUserByFullName(username)
-                .orElseThrow();
-    }
-
-    public StatusResponse getUserDataResponse(HttpServletRequest request) {
-        ValidResponse validResponse = requestSenderService.extractValidResponse(request);
-        if (validResponse == null){
-            throw new RuntimeException("Something went wrong. Please try later.");
+    public StatusResponse getUserData(HttpServletRequest request) {
+        AuthUserInfoDto userInfo = extractAuthUserInfo(request);
+        if (!userRepository.existsById(userInfo.userId())){
+                    createUser(userInfo.userId());
         }
-        if (!isUserPresent(validResponse.getData().getUserId())){
-            saveUser(new UserInputDTO(validResponse.getData().getUserId()));
-        }
-        UserDTO userDTO = composeUserDTO(validResponse);
+
+        UserDTO userDTO = composeUserDTO(userInfo);
         return new StatusResponse(200, userDTO);
     }
 
-    public StatusResponse updateUser(UserUpdateDTO userUpdateDTO){
+    private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
+        return requestSenderService.extractValidResponse(request).getData(); // Handle potential exceptions
+    }
+
+    public StatusResponse updateUser(UserUpdateDTO userUpdateDTO) {
+        updateDetails(userUpdateDTO);
+        return new StatusResponse(200, userUpdateDTO); // Consider returning updated user info if relevant
+    }
+
+    private void updateDetails(UserUpdateDTO userUpdateDTO) {
         User user = getUserById(userUpdateDTO.getUserId());
-        user.setFullName(userUpdateDTO.getFullName());
-        user.setUserPhotoUrl(userUpdateDTO.getUserPhotoURL());
+        user.setUserPhotoUrl(userUpdateDTO.getUserPhotoUrl());
+        user.setFullName(user.getFullName());
         userRepository.save(user);
-        return new StatusResponse(200, userUpdateDTO);
     }
 
-    private UserDTO composeUserDTO(ValidResponse validResponse){
-        User user = getUserById(validResponse.getData().getUserId());
-        ValidResponse.UserInfoDTO data = validResponse.getData();
-        return new UserDTO(
-                user.getId(),
-                user.getFullName(),
-                data.getPhoneNumber(),
-                data.getEmail(),
-//                user.getAddress().getCityName(),
-                user.getUserPhotoUrl());
-    }
-
-    private boolean isUserPresent(long userId){
-        return getUserById(userId) != null;
+    private UserDTO composeUserDTO(AuthUserInfoDto userInfo) {
+        User user = getUserById(userInfo.userId());
+        return UserDTO.builder()
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .userPhotoUrl(user.getUserPhotoUrl())
+                .phone(userInfo.phoneNumber())
+                .email(userInfo.email())
+                .build();
     }
 }

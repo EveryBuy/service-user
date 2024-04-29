@@ -4,7 +4,7 @@ import lombok.NonNull;
 import ua.everybuy.buisnesslogic.service.RequestSenderService;
 import ua.everybuy.routing.model.dto.response.ErrorResponse;
 import ua.everybuy.routing.model.dto.response.MessageResponse;
-import ua.everybuy.routing.model.dto.response.ValidResponse;
+import ua.everybuy.routing.model.dto.response.ValidRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,22 +32,19 @@ public class ValidationFilter extends OncePerRequestFilter {
 
 
         try{
-            ResponseEntity<ValidResponse> exchange = requestSenderService.doRequest(request);
+            ResponseEntity<ValidRequest> exchange = requestSenderService.doRequest(request);
             System.out.println(exchange.getBody());
             filterChain.doFilter(request, response);
         }
         catch (HttpClientErrorException e) {
-            int statusCode = e.getStatusCode().value();
-            extractErrorMessage(response, e, statusCode);
-        }catch (RuntimeException e){
-            int statusCode = 503;
+            int statusCode =  e.getStatusCode().value();
             extractErrorMessage(response, e, statusCode);
         }
-
     }
 
     private void extractErrorMessage(HttpServletResponse response, RuntimeException e, int statusCode) throws IOException {
-        String message = e.getMessage();
+//        statusCode = statusCode == 403 ? 401 : statusCode;
+        String message = statusCode == 401 ? "Unauthorized" : e.getMessage();
         ErrorResponse errorResponse = new ErrorResponse(statusCode, new MessageResponse(message));
         String json = objectMapper.writeValueAsString(errorResponse);
         response.setStatus(statusCode);

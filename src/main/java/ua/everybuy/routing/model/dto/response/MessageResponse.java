@@ -1,4 +1,12 @@
 package ua.everybuy.routing.model.dto.response;
 
-public record MessageResponse(String status) {
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class MessageResponse {
+    private String message;
 }

@@ -21,7 +21,7 @@ import java.util.TimeZone;
 public class User {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "user_full_name")
@@ -39,19 +39,11 @@ public class User {
     @Column(name = "is_block")
     private boolean isBlock;
 
-//    @ManyToOne
-//    @JoinColumn(name = "default_city_id")
-//    private City address;
-
-
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
-
 
     @PrePersist
     public void onCreate(){
@@ -65,6 +57,10 @@ public class User {
             throw new RuntimeException(e);
         }
         isBlock = false;
+    }
+
+    public User (Long id){
+        this.id = id;
     }
 
 }

@@ -1,11 +1,17 @@
 package ua.everybuy.routing.model.dto;
 
+import lombok.*;
 import ua.everybuy.routing.model.dto.response.ResponseMarker;
 
-public record UserDTO(Long userId,
-                      String fullName,
-                      String phone,
-                      String email,
-//                      String address,
-                      String userPhotoUrl) implements ResponseMarker {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserDTO implements ResponseMarker {
+    private Long userId;
+    private String fullName;
+    private String phone;
+    private String email;
+    private String userPhotoUrl;
 }
