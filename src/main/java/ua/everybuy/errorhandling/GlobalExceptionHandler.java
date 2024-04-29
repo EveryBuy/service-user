@@ -19,7 +19,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ErrorResponse> handleValidationExceptions(HttpStatusCodeException ex) {
-        System.out.println("IN HANDLER");
         return ResponseEntity
                 .badRequest()
                 .body(new ErrorResponse(ex.getStatusCode().value(), new MessageResponse(ex.getMessage())));
@@ -27,7 +26,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({UserNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNoElementExceptions(UserNotFoundException ex, HttpServletResponse response) {
-        System.out.println("IN HANDLER");
         response.setStatus(404);
         return ResponseEntity
                 .badRequest()

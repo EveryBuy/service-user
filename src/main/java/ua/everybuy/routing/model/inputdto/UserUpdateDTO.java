@@ -1,25 +1,22 @@
 package ua.everybuy.routing.model.inputdto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import ua.everybuy.routing.model.dto.response.ResponseMarker;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@Valid
 public class UserUpdateDTO implements ResponseMarker {
+
+    @NotNull(message = "field userId not should be null")
     private Long userId;
+    @NotNull(message = "field fullName not should be null")
     private String fullName;
-    private String userPhotoURL;
+    private String userPhotoUrl;
     private String email;
     private String phone;
-
-    public UserUpdateDTO(Long userId, String fullName, String userPhotoURL, String email, String phone) {
-        this.userId = userId;
-        this.fullName = fullName;
-        this.userPhotoURL = userPhotoURL;
-        this.email = email;
-        this.phone = phone;
-    }
 }
