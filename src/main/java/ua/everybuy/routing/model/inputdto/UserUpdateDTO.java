@@ -16,7 +16,10 @@ public class UserUpdateDTO implements ResponseMarker {
     private Long userId;
     @NotNull(message = "field fullName not should be null")
     private String fullName;
+    @NotNull(message = "field userPhotoUrl not should be null")
     private String userPhotoUrl;
+    @NotNull(message = "field email not should be null")
     private String email;
+    @NotNull(message = "field phone not should be null")
     private String phone;
 }
