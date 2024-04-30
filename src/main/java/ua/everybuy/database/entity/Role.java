@@ -1,6 +1,6 @@
 package ua.everybuy.database.entity;
 
-import ua.everybuy.routing.model.dto.RoleDTO;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.Set;
 public class Role {
 
     @Id
-    @Column (name = "userId")
+    @Column (name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -24,9 +24,5 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
-
-    public RoleDTO convertToRoleDTO(){
-        return new RoleDTO(this.roleName);
-    }
 
 }

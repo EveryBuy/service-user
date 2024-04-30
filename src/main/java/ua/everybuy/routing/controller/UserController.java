@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.everybuy.routing.model.inputdto.UserUpdateDTO;
+import ua.everybuy.routing.model.requet.UpdateUserRequest;
 
 
 @RestController
@@ -23,9 +23,8 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<StatusResponse> updateUser(@RequestBody @Valid UserUpdateDTO userUpdateDTO){
-        System.out.println(userUpdateDTO);
-        return ResponseEntity.ok(userService.updateUser(userUpdateDTO));
+    public ResponseEntity<StatusResponse> updateUser(@RequestBody @Valid UpdateUserRequest updateUserRequest){
+        return ResponseEntity.ok(userService.updateUser(updateUserRequest));
     }
 
 }

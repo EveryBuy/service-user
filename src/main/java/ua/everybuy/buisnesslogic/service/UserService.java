@@ -5,9 +5,10 @@ import ua.everybuy.database.repository.UserRepository;
 
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
-import ua.everybuy.routing.model.dto.UserDTO;
+import ua.everybuy.routing.model.dto.UserDto;
 import ua.everybuy.routing.model.dto.response.StatusResponse;
-import ua.everybuy.routing.model.inputdto.UserUpdateDTO;
+import ua.everybuy.routing.model.requet.UpdateUserRequest;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserService {
     private final RequestSenderService requestSenderService;
 
     public void createUser(long userId) {
-        User user = new User(userId); // Consider adding required fields
+        User user = new User(userId);
         userRepository.save(user);
     }
 
@@ -36,29 +37,29 @@ public class UserService {
                     createUser(userInfo.userId());
         }
 
-        UserDTO userDTO = composeUserDTO(userInfo);
+        UserDto userDTO = composeUserDTO(userInfo);
         return new StatusResponse(200, userDTO);
     }
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
-        return requestSenderService.extractValidResponse(request).getData(); // Handle potential exceptions
+        return requestSenderService.extractValidResponse(request).getData();
     }
 
-    public StatusResponse updateUser(UserUpdateDTO userUpdateDTO) {
-        updateDetails(userUpdateDTO);
-        return new StatusResponse(200, userUpdateDTO); // Consider returning updated user info if relevant
+    public StatusResponse updateUser(UpdateUserRequest userUpdateRequest) {
+        return new StatusResponse(200, updateDetails(userUpdateRequest));
     }
 
-    private void updateDetails(UserUpdateDTO userUpdateDTO) {
-        User user = getUserById(userUpdateDTO.getUserId());
-        user.setUserPhotoUrl(userUpdateDTO.getUserPhotoUrl());
+    private UserDto updateDetails(UpdateUserRequest updateUserRequest) {
+        User user = getUserById(updateUserRequest.userId());
+        user.setUserPhotoUrl(updateUserRequest.userPhotoUrl());
         user.setFullName(user.getFullName());
         userRepository.save(user);
+        return UserDto.convertUpdateRequestToUserDto(updateUserRequest);
     }
 
-    private UserDTO composeUserDTO(AuthUserInfoDto userInfo) {
+    private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
         User user = getUserById(userInfo.userId());
-        return UserDTO.builder()
+        return UserDto.builder()
                 .userId(user.getId())
                 .fullName(user.getFullName())
                 .userPhotoUrl(user.getUserPhotoUrl())

@@ -1,5 +1,4 @@
 package ua.everybuy.routing.controller;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -9,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//todo raw logic need to refine
 @RestController
 @RequestMapping
 public class FileUploadController {

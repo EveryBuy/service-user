@@ -21,7 +21,6 @@ import java.util.TimeZone;
 public class User {
     @Id
     @Column(name = "id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "user_full_name")
