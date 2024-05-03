@@ -1,5 +1,6 @@
 package ua.everybuy.buisnesslogic.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
@@ -13,6 +14,9 @@ import ua.everybuy.routing.model.requet.UpdateUserRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 
 
 @Service
@@ -49,10 +53,17 @@ public class UserService {
         return new StatusResponse(200, updateDetails(userUpdateRequest));
     }
 
+
+    public void updatePhotoUrl(String url, long userId){
+        User user = getUserById(userId);
+        user.setUserPhotoUrl(url);
+        userRepository.save(user);
+    }
+
     private UserDto updateDetails(UpdateUserRequest updateUserRequest) {
         User user = getUserById(updateUserRequest.userId());
-        user.setUserPhotoUrl(updateUserRequest.userPhotoUrl());
-        user.setFullName(user.getFullName());
+//        user.setUserPhotoUrl(updateUserRequest.userPhotoUrl());
+        user.setFullName(updateUserRequest.fullName());
         userRepository.save(user);
         return UserDto.convertUpdateRequestToUserDto(updateUserRequest);
     }

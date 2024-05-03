@@ -17,14 +17,13 @@ import ua.everybuy.routing.model.requet.UpdateUserRequest;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<StatusResponse> getUser(HttpServletRequest request){
         return ResponseEntity.ok(userService.getUserData(request));
     }
 
-    @PostMapping("/update")
+    @PutMapping
     public ResponseEntity<StatusResponse> updateUser(@RequestBody @Valid UpdateUserRequest updateUserRequest){
         return ResponseEntity.ok(userService.updateUser(updateUserRequest));
     }
-
 }
