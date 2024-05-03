@@ -57,7 +57,7 @@ public class PhotoService {
             metadata.setContentLength(photo.getSize());
 
             s3Client.putObject(bucketName, photoKey, photo.getInputStream(), metadata);
-            userService.updatePhotoUrl(photoKey, userId);
+            userService.updatePhotoUrl(URL_PHOTO_PREFIX + photoKey, userId);
 
         } catch (AmazonServiceException e) {
             System.err.println("AWS error: " + e.getErrorMessage());
