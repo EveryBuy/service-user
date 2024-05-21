@@ -3,12 +3,14 @@ package ua.everybuy.routing.controller;
 
 import jakarta.validation.Valid;
 import ua.everybuy.buisnesslogic.service.UserService;
-import ua.everybuy.routing.model.dto.response.StatusResponse;
+import ua.everybuy.routing.model.model.response.StatusResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.everybuy.routing.model.requet.UpdateUserRequest;
+import ua.everybuy.routing.model.request.UpdateUserFullNameRequest;
+
+import java.security.Principal;
 
 
 @RestController
@@ -17,14 +19,16 @@ import ua.everybuy.routing.model.requet.UpdateUserRequest;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<StatusResponse> getUser(HttpServletRequest request){
         return ResponseEntity.ok(userService.getUserData(request));
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<StatusResponse> updateUser(@RequestBody @Valid UpdateUserRequest updateUserRequest){
-        return ResponseEntity.ok(userService.updateUser(updateUserRequest));
+    @PutMapping
+    public ResponseEntity<StatusResponse> updateUserFullName(@RequestBody @Valid UpdateUserFullNameRequest updateUserFullNameRequest,
+                                                             Principal principal){
+        return ResponseEntity.ok(userService.updateUserFullName(updateUserFullNameRequest, principal));
     }
+
 
 }

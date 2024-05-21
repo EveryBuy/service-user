@@ -1,4 +1,4 @@
-package ua.everybuy.routing.model.dto.response;
+package ua.everybuy.routing.model.model.response;
 
 import lombok.*;
 
