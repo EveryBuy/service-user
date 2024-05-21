@@ -24,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserData(request));
     }
 
-    @PutMapping
+    @PutMapping("/update-full-name")
     public ResponseEntity<StatusResponse> updateUserFullName(@RequestBody @Valid UpdateUserFullNameRequest updateUserFullNameRequest,
                                                              Principal principal){
         return ResponseEntity.ok(userService.updateUserFullName(updateUserFullNameRequest, principal));
