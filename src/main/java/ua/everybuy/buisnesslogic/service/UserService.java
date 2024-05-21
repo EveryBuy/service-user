@@ -1,22 +1,21 @@
 package ua.everybuy.buisnesslogic.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
-import ua.everybuy.routing.model.dto.AuthUserInfoDto;
-import ua.everybuy.routing.model.dto.UserDto;
-import ua.everybuy.routing.model.dto.response.StatusResponse;
-import ua.everybuy.routing.model.requet.UpdateUserRequest;
+import ua.everybuy.routing.model.model.dto.AuthUserInfoDto;
+import ua.everybuy.routing.model.model.dto.UserDto;
+import ua.everybuy.routing.model.model.response.FullNameResponse;
+import ua.everybuy.routing.model.model.response.StatusResponse;
+import ua.everybuy.routing.model.request.UpdateUserFullNameRequest;
 
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.security.Principal;
 
 
 @Service
@@ -49,10 +48,6 @@ public class UserService {
         return requestSenderService.extractValidResponse(request).getData();
     }
 
-    public StatusResponse updateUser(UpdateUserRequest userUpdateRequest) {
-        return new StatusResponse(200, updateDetails(userUpdateRequest));
-    }
-
 
     public void updatePhotoUrl(String url, long userId){
         User user = getUserById(userId);
@@ -60,12 +55,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private UserDto updateDetails(UpdateUserRequest updateUserRequest) {
-        User user = getUserById(updateUserRequest.userId());
-//        user.setUserPhotoUrl(updateUserRequest.userPhotoUrl());
-        user.setFullName(updateUserRequest.fullName());
+    public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
+        User user = getUserById(Long.parseLong(principal.getName()));
+        user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
-        return UserDto.convertUpdateRequestToUserDto(updateUserRequest);
+        FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
+        return new StatusResponse(200, fullNameResponse);
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {

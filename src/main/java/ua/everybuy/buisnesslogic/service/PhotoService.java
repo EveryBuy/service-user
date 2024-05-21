@@ -7,18 +7,15 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import jakarta.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ua.everybuy.routing.model.model.response.PhotoUrlResponse;
+import ua.everybuy.routing.model.model.response.StatusResponse;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +28,7 @@ public class PhotoService {
     @Value("${aws.secret.key}")
     private String secretKey;
 
-    public String handlePhotoUpload(MultipartFile photo, Long userId) throws IOException {
-
-
+    public StatusResponse handlePhotoUpload(MultipartFile photo, Principal principal) throws IOException {
 
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 
@@ -46,18 +41,16 @@ public class PhotoService {
         if (!s3Client.doesBucketExistV2(bucketName)) {
             throw new IOException("Bucket '" + bucketName + "' does not exist.");
         }
-        String photoKey;
+        String photoUrl = URL_PHOTO_PREFIX + principal.getName();
 
         try {
-
-            photoKey = photo.getOriginalFilename();
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(photo.getContentType());
             metadata.setContentLength(photo.getSize());
 
-            s3Client.putObject(bucketName, photoKey, photo.getInputStream(), metadata);
-            userService.updatePhotoUrl(URL_PHOTO_PREFIX + photoKey, userId);
+            s3Client.putObject(bucketName, principal.getName(), photo.getInputStream(), metadata);
+            userService.updatePhotoUrl(photoUrl, Long.parseLong(principal.getName()));
 
         } catch (AmazonServiceException e) {
             System.err.println("AWS error: " + e.getErrorMessage());
@@ -66,8 +59,7 @@ public class PhotoService {
             System.err.println("Client error: " + e.getMessage());
             throw new IOException("Failed to upload photos to S3: " + e.getMessage(), e);
         }
-
-        return URL_PHOTO_PREFIX + photoKey;
+        return new StatusResponse(200, new PhotoUrlResponse(photoUrl));
     }
 
 }

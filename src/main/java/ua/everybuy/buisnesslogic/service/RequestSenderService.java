@@ -1,6 +1,6 @@
 package ua.everybuy.buisnesslogic.service;
 
-import ua.everybuy.routing.model.dto.response.ValidRequest;
+import ua.everybuy.routing.model.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ public class RequestSenderService {
     @Value("${auth.service.url}")
     private String authServiceUrl;
 
-    public ResponseEntity<ValidRequest> doRequest(HttpServletRequest request){
+    public ResponseEntity<ValidRequestDto> doRequest(HttpServletRequest request){
         final RestTemplate restTemplate = new RestTemplate();
         String authHeader = request.getHeader(AUTH_HEADER_PREFIX);
 
@@ -31,7 +31,7 @@ public class RequestSenderService {
                 authServiceUrl,
                 HttpMethod.GET,
                 requestEntity,
-                ValidRequest.class);
+                ValidRequestDto.class);
     }
 
     private static HttpEntity<HttpHeaders> getHttpHeadersHttpEntity(String authHeader) {
@@ -40,7 +40,7 @@ public class RequestSenderService {
         return new HttpEntity<>(null, header);
     }
 
-    public ValidRequest extractValidResponse(HttpServletRequest request){
+    public ValidRequestDto extractValidResponse(HttpServletRequest request){
         return doRequest(request).getBody();
      }
 }

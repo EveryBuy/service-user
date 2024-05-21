@@ -8,8 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
-import ua.everybuy.routing.model.dto.response.ErrorResponse;
-import ua.everybuy.routing.model.dto.response.MessageResponse;
+import ua.everybuy.routing.model.model.response.ErrorResponse;
+import ua.everybuy.routing.model.model.response.MessageResponse;
 
 import java.util.List;
 

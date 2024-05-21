@@ -1,4 +1,4 @@
-package ua.everybuy.routing.model.dto;
+package ua.everybuy.routing.model.model.dto;
 
 import java.util.List;
 
