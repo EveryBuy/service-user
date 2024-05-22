@@ -1,5 +1,6 @@
 package ua.everybuy.buisnesslogic.service;
 
+import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
@@ -52,6 +53,7 @@ public class UserService {
     public void updatePhotoUrl(String url, long userId){
         User user = getUserById(userId);
         user.setUserPhotoUrl(url);
+        user.onUpdate();
         userRepository.save(user);
     }
 

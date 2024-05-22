@@ -8,7 +8,7 @@ import ua.everybuy.routing.model.model.response.StatusResponse;
 import java.io.IOException;
 import java.security.Principal;
 
-//todo raw logic need to refine
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor

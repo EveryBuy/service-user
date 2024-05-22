@@ -6,7 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import ua.everybuy.buisnesslogic.service.RequestSenderService;
+import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.routing.model.model.response.ErrorResponse;
 import ua.everybuy.routing.model.model.response.MessageResponse;
 import ua.everybuy.routing.model.model.dto.ValidRequestDto;
@@ -35,7 +35,7 @@ public class ValidationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String userId;
-        ValidRequestDto validRequest = null;
+        ValidRequestDto validRequest;
 
         try{
             ResponseEntity<ValidRequestDto> exchange = requestSenderService.doRequest(request);
@@ -45,6 +45,7 @@ public class ValidationFilter extends OncePerRequestFilter {
         catch (HttpClientErrorException e) {
             int statusCode =  e.getStatusCode().value();
             extractErrorMessage(response, e, statusCode);
+            return;
         }
         userId = String.valueOf(validRequest.getData().userId());
 
@@ -59,7 +60,6 @@ public class ValidationFilter extends OncePerRequestFilter {
     }
 
     private void extractErrorMessage(HttpServletResponse response, RuntimeException e, int statusCode) throws IOException {
-//        statusCode = statusCode == 403 ? 401 : statusCode;
         String message = statusCode == 401 ? "Unauthorized" : e.getMessage();
         ErrorResponse errorResponse = new ErrorResponse(statusCode, new MessageResponse(message));
         String json = objectMapper.writeValueAsString(errorResponse);

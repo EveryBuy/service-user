@@ -1,4 +1,4 @@
-package ua.everybuy.buisnesslogic.service;
+package ua.everybuy.buisnesslogic.util;
 
 import ua.everybuy.routing.model.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;

@@ -3,13 +3,11 @@ package ua.everybuy.database.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ua.everybuy.buisnesslogic.util.DateService;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TimeZone;
 
 @Builder
 @NoArgsConstructor
@@ -46,16 +44,12 @@ public class User {
 
     @PrePersist
     public void onCreate(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        creationDate = new Date();
-        String formattedDate = sdf.format(creationDate);
-        try {
-            creationDate = sdf.parse(formattedDate);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        isBlock = false;
+        creationDate = DateService.setDateFormat(new Date());
+    }
+
+    @PreUpdate
+    public void onUpdate(){
+        lastActivityDate = DateService.setDateFormat(new Date());
     }
 
     public User (Long id){
