@@ -55,7 +55,7 @@ public class UserController {
     @Operation(summary = "Update user full name", description = "Update the user's full name based on the provided request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated user full name",
-                    content = @Content(mediaType = "application/json", schema = @Schema(oneOf = {StatusResponse.class, StatusResponse.class}))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",

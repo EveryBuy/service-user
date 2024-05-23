@@ -8,8 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@Schema(description = "Full name response")
 public class FullNameResponse implements ResponseMarker{
-    @Schema(description = "Full name of the user")
     private String fullName;
 }
