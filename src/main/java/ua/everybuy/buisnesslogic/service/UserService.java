@@ -1,5 +1,6 @@
 package ua.everybuy.buisnesslogic.service;
 
+import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
@@ -34,14 +35,14 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public StatusResponse getUserData(HttpServletRequest request) {
+    public StatusResponse<UserDto> getUserData(HttpServletRequest request) {
         AuthUserInfoDto userInfo = extractAuthUserInfo(request);
         if (!userRepository.existsById(userInfo.userId())){
                     createUser(userInfo.userId());
         }
 
         UserDto userDTO = composeUserDTO(userInfo);
-        return new StatusResponse(200, userDTO);
+        return new StatusResponse<>(200, userDTO);
     }
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
@@ -52,15 +53,16 @@ public class UserService {
     public void updatePhotoUrl(String url, long userId){
         User user = getUserById(userId);
         user.setUserPhotoUrl(url);
+        user.onUpdate();
         userRepository.save(user);
     }
 
-    public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
+    public StatusResponse<FullNameResponse> updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
         User user = getUserById(Long.parseLong(principal.getName()));
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        return new StatusResponse(200, fullNameResponse);
+        return new StatusResponse<>(200, fullNameResponse);
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {

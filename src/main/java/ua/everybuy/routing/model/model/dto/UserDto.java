@@ -1,5 +1,6 @@
 package ua.everybuy.routing.model.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import ua.everybuy.routing.model.model.response.ResponseMarker;
 
