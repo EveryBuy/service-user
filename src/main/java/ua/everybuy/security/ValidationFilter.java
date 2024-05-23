@@ -22,6 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -29,11 +30,15 @@ public class ValidationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final RequestSenderService requestSenderService;
 
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+        if (shouldNotFilter(request)) {
+//            filterChain.doFilter(request, response);
+            return;
+        }
+
         String userId;
         ValidRequestDto validRequest;
 
@@ -47,17 +52,31 @@ public class ValidationFilter extends OncePerRequestFilter {
             extractErrorMessage(response, e, statusCode);
             return;
         }
-        userId = String.valueOf(validRequest.getData().userId());
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userId, null,
-                validRequest.getData().roles().stream().map(SimpleGrantedAuthority::new).toList());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        context.setAuthentication(authToken);
-        SecurityContextHolder.setContext(context);
-        filterChain.doFilter(request, response);
+        if(validRequest != null){
+            userId = String.valueOf(validRequest.getData().userId());
+            List<SimpleGrantedAuthority> grantedAuthorities = validRequest.getData().roles()
+                    .stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userId, null,
+                    grantedAuthorities);
+
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            context.setAuthentication(authToken);
+            SecurityContextHolder.setContext(context);
+            filterChain.doFilter(request, response);
+        }
+
     }
+
+    @Override
+    public boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/swagger") || request.getRequestURI().startsWith("/v3");
+    }
+
 
     private void extractErrorMessage(HttpServletResponse response, RuntimeException e, int statusCode) throws IOException {
         String message = statusCode == 401 ? "Unauthorized" : e.getMessage();

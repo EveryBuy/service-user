@@ -35,14 +35,14 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public StatusResponse getUserData(HttpServletRequest request) {
+    public StatusResponse<UserDto> getUserData(HttpServletRequest request) {
         AuthUserInfoDto userInfo = extractAuthUserInfo(request);
         if (!userRepository.existsById(userInfo.userId())){
                     createUser(userInfo.userId());
         }
 
         UserDto userDTO = composeUserDTO(userInfo);
-        return new StatusResponse(200, userDTO);
+        return new StatusResponse<>(200, userDTO);
     }
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
@@ -57,12 +57,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
+    public StatusResponse<FullNameResponse> updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
         User user = getUserById(Long.parseLong(principal.getName()));
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        return new StatusResponse(200, fullNameResponse);
+        return new StatusResponse<>(200, fullNameResponse);
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
