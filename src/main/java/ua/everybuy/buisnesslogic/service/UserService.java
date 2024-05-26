@@ -6,6 +6,7 @@ import ua.everybuy.database.repository.UserRepository;
 
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
 import ua.everybuy.routing.model.model.dto.AuthUserInfoDto;
+import ua.everybuy.routing.model.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.model.dto.UserDto;
 import ua.everybuy.routing.model.model.response.FullNameResponse;
 import ua.everybuy.routing.model.model.response.StatusResponse;
@@ -35,14 +36,14 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    public StatusResponse<UserDto> getUserData(HttpServletRequest request) {
+    public StatusResponse getUserData(HttpServletRequest request) {
         AuthUserInfoDto userInfo = extractAuthUserInfo(request);
         if (!userRepository.existsById(userInfo.userId())){
                     createUser(userInfo.userId());
         }
 
         UserDto userDTO = composeUserDTO(userInfo);
-        return new StatusResponse<>(200, userDTO);
+        return new StatusResponse(200, userDTO);
     }
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
@@ -57,12 +58,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public StatusResponse<FullNameResponse> updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
+    public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
         User user = getUserById(Long.parseLong(principal.getName()));
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        return new StatusResponse<>(200, fullNameResponse);
+        return new StatusResponse(200, fullNameResponse);
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
@@ -73,6 +74,15 @@ public class UserService {
                 .userPhotoUrl(user.getUserPhotoUrl())
                 .phone(userInfo.phoneNumber())
                 .email(userInfo.email())
+                .build();
+    }
+
+    public StatusResponse getShortUserInfo(long userId){
+        User user = getUserById(userId);
+        return StatusResponse
+                .builder()
+                .status(200)
+                .data(new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()))
                 .build();
     }
 }

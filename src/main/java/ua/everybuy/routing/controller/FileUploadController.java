@@ -1,7 +1,6 @@
 package ua.everybuy.routing.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,7 +38,7 @@ public class FileUploadController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/photo-upload")
-    public StatusResponse<PhotoUrlResponse> uploadPhoto(
+    public StatusResponse uploadPhoto(
             Principal principal,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "The photo file to upload",

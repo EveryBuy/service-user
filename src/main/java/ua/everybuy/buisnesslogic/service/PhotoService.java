@@ -25,7 +25,7 @@ public class PhotoService {
     @Value("${aws.bucket}")
     private String bucketName;
 
-    public StatusResponse<PhotoUrlResponse> handlePhotoUpload(MultipartFile photo, Principal principal) throws IOException {
+    public StatusResponse handlePhotoUpload(MultipartFile photo, Principal principal) throws IOException {
         isImage(photo);
 
         if (!s3Client.doesBucketExistV2(bucketName)) {
@@ -48,7 +48,7 @@ public class PhotoService {
             throw new IOException("Failed to upload photos to S3: " + e.getMessage(), e);
         }
 
-        return new StatusResponse<>(200, new PhotoUrlResponse(photoUrl));
+        return new StatusResponse(200, new PhotoUrlResponse(photoUrl));
     }
 
     private void isImage(MultipartFile file) throws IOException {
