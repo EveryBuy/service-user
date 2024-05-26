@@ -29,17 +29,6 @@ import java.security.Principal;
 public class UserController {
     private final UserService userService;
 
-//    @GetMapping
-//    public ResponseEntity<StatusResponse> getUser(HttpServletRequest request){
-//        return ResponseEntity.ok(userService.getUserData(request));
-//    }
-//
-//    @PutMapping("/update-full-name")
-//    public ResponseEntity<StatusResponse> updateUserFullName(@RequestBody @Valid UpdateUserFullNameRequest updateUserFullNameRequest,
-//                                                             Principal principal){
-//        return ResponseEntity.ok(userService.updateUserFullName(updateUserFullNameRequest, principal));
-//    }
-
     @Operation(summary = "Get user data", description = "Fetch the user data based on the request")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved user data",
@@ -48,7 +37,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
     })
     @GetMapping
-    public ResponseEntity<StatusResponse<UserDto>> getUser(HttpServletRequest request){
+    public ResponseEntity<StatusResponse> getUser(HttpServletRequest request){
         return ResponseEntity.ok(userService.getUserData(request));
     }
 
@@ -62,9 +51,14 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PutMapping("/update-full-name")
-    public ResponseEntity<StatusResponse<FullNameResponse>> updateUserFullName(@RequestBody @Valid UpdateUserFullNameRequest updateUserFullNameRequest,
+    public ResponseEntity<StatusResponse> updateUserFullName(@RequestBody @Valid UpdateUserFullNameRequest updateUserFullNameRequest,
                                                                                Principal principal){
         return ResponseEntity.ok(userService.updateUserFullName(updateUserFullNameRequest, principal));
+    }
+
+    @GetMapping("/short-info")
+    public  ResponseEntity<StatusResponse> getShortUserInfo(@RequestParam(name = "userId") long userId){
+        return ResponseEntity.ok(userService.getShortUserInfo(userId));
     }
 
 
