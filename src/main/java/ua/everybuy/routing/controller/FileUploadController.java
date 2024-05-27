@@ -1,20 +1,16 @@
 package ua.everybuy.routing.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.everybuy.buisnesslogic.service.PhotoService;
 import ua.everybuy.routing.model.model.response.ErrorResponse;
-import ua.everybuy.routing.model.model.response.PhotoUrlResponse;
 import ua.everybuy.routing.model.model.response.StatusResponse;
 
 import java.io.IOException;
@@ -28,15 +24,18 @@ import java.security.Principal;
 public class FileUploadController {
     private final PhotoService photoService;
 
-    @Operation(summary = "Upload a photo. Multipart file name = 'photo'")
+    @Operation(summary = "Upload a photo. Parameter for MultiPartFile name = 'photo'")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Photo uploaded successfully",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StatusResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "Null file value",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "415", description = "Invalid file format",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
+            @ApiResponse(responseCode = "500", description = "Aws server error",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
@@ -49,7 +48,7 @@ public class FileUploadController {
                     content = @Content(mediaType = "multipart/form-data",
                             schema = @Schema(type = "string", format = "binary")))
             @RequestParam(name = "photo")
-            @Valid MultipartFile photo
+            MultipartFile photo
     ) throws IOException {
         return photoService.handlePhotoUpload(photo, principal);
     }

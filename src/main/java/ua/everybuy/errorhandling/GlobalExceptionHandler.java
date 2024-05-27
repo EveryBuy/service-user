@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
+import ua.everybuy.errorhandling.exception.FileFormatException;
 import ua.everybuy.errorhandling.exception.FileValidException;
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
 import ua.everybuy.routing.model.model.response.ErrorResponse;
@@ -40,8 +41,8 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(404, new MessageResponse(ex.getMessage())));
     }
 
-    @ExceptionHandler({IOException.class})
-    public ResponseEntity<ErrorResponse> handleFileDownloadException(IOException ex) {
+    @ExceptionHandler({FileFormatException.class})
+    public ResponseEntity<ErrorResponse> handleFileDownloadException(FileFormatException ex) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(415))
                 .body(new ErrorResponse(415, new MessageResponse(ex.getMessage())));
@@ -58,5 +59,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                         new MessageResponse(String.join("; ", errors))));
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        new MessageResponse(ex.getMessage())));
     }
 }
