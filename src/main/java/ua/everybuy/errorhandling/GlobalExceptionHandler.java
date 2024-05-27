@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
+import ua.everybuy.errorhandling.exception.FileValidException;
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
 import ua.everybuy.routing.model.model.response.ErrorResponse;
 import ua.everybuy.routing.model.model.response.MessageResponse;
@@ -23,6 +24,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(new ErrorResponse(ex.getStatusCode().value(), new MessageResponse(ex.getMessage())));
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> handleFileValidExceptions(FileValidException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), new MessageResponse(ex.getMessage())));
     }
 
     @ExceptionHandler({UserNotFoundException.class})

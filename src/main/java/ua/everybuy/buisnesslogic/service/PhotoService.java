@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.everybuy.errorhandling.exception.FileFormatException;
+import ua.everybuy.errorhandling.exception.FileValidException;
 import ua.everybuy.routing.model.model.response.PhotoUrlResponse;
 import ua.everybuy.routing.model.model.response.StatusResponse;
 
@@ -26,6 +27,7 @@ public class PhotoService {
     private String bucketName;
 
     public StatusResponse handlePhotoUpload(MultipartFile photo, Principal principal) throws IOException {
+        isEmpty(photo);
         isImage(photo);
 
         if (!s3Client.doesBucketExistV2(bucketName)) {
@@ -54,6 +56,12 @@ public class PhotoService {
     private void isImage(MultipartFile file) throws IOException {
         if (ImageIO.read(file.getInputStream()) == null) {
             throw new FileFormatException("File should be image");
+        }
+    }
+
+    private void isEmpty(MultipartFile file) {
+        if (file == null || file.isEmpty()){
+            throw new FileValidException("File should be not null");
         }
     }
 

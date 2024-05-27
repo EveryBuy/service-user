@@ -1,11 +1,14 @@
 package ua.everybuy.routing.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +28,7 @@ import java.security.Principal;
 public class FileUploadController {
     private final PhotoService photoService;
 
-    @Operation(summary = "Upload a photo")
+    @Operation(summary = "Upload a photo. Multipart file name = 'photo'")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Photo uploaded successfully",
                     content = { @Content(mediaType = "application/json",
@@ -45,8 +48,8 @@ public class FileUploadController {
                     required = true,
                     content = @Content(mediaType = "multipart/form-data",
                             schema = @Schema(type = "string", format = "binary")))
-            @RequestParam("photo")
-            MultipartFile photo
+            @RequestParam(name = "photo")
+            @Valid MultipartFile photo
     ) throws IOException {
         return photoService.handlePhotoUpload(photo, principal);
     }
