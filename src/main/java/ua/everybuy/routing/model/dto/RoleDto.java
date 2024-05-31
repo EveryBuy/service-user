@@ -1,4 +1,4 @@
-package ua.everybuy.routing.model.model.dto;
+package ua.everybuy.routing.model.dto;
 
 
 public record RoleDto(String roleName) {

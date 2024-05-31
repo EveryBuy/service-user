@@ -1,6 +1,6 @@
 package ua.everybuy.buisnesslogic.util;
 
-import ua.everybuy.routing.model.model.dto.ValidRequestDto;
+import ua.everybuy.routing.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
