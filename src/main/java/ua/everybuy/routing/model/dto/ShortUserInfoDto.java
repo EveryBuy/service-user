@@ -1,9 +1,9 @@
-package ua.everybuy.routing.model.model.dto;
+package ua.everybuy.routing.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ua.everybuy.routing.model.model.response.ResponseMarker;
+import ua.everybuy.routing.model.response.ResponseMarker;
 
 @Getter
 @Setter

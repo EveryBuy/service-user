@@ -6,13 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 import ua.everybuy.errorhandling.exception.FileFormatException;
 import ua.everybuy.errorhandling.exception.FileValidException;
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
-import ua.everybuy.routing.model.model.response.ErrorResponse;
-import ua.everybuy.routing.model.model.response.MessageResponse;
+import ua.everybuy.routing.model.response.ErrorResponse;
+import ua.everybuy.routing.model.response.MessageResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -69,4 +70,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         new MessageResponse(ex.getMessage())));
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParamException(MissingServletRequestParameterException ex){
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(new ErrorResponse(ex.getStatusCode().value(),
+                        new MessageResponse(ex.getMessage())));
+    }
+
 }
