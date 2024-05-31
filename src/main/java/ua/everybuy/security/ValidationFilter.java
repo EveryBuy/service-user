@@ -7,9 +7,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import ua.everybuy.buisnesslogic.util.RequestSenderService;
-import ua.everybuy.routing.model.model.response.ErrorResponse;
-import ua.everybuy.routing.model.model.response.MessageResponse;
-import ua.everybuy.routing.model.model.dto.ValidRequestDto;
+import ua.everybuy.routing.model.response.ErrorResponse;
+import ua.everybuy.routing.model.response.MessageResponse;
+import ua.everybuy.routing.model.dto.ValidRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,7 +44,6 @@ public class ValidationFilter extends OncePerRequestFilter {
 
         try{
             ResponseEntity<ValidRequestDto> exchange = requestSenderService.doRequest(request);
-            System.out.println(exchange.getBody());
             validRequest = exchange.getBody();
         }
         catch (HttpClientErrorException e) {
@@ -71,10 +70,10 @@ public class ValidationFilter extends OncePerRequestFilter {
         }
 
     }
-
     @Override
     public boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/swagger") || request.getRequestURI().startsWith("/v3");
+        return request.getRequestURI().startsWith("/swagger")
+                || request.getRequestURI().startsWith("/v3");
     }
 
 

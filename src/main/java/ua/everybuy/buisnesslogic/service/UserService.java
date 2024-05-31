@@ -5,11 +5,11 @@ import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
 import ua.everybuy.errorhandling.exception.UserNotFoundException;
-import ua.everybuy.routing.model.model.dto.AuthUserInfoDto;
-import ua.everybuy.routing.model.model.dto.ShortUserInfoDto;
-import ua.everybuy.routing.model.model.dto.UserDto;
-import ua.everybuy.routing.model.model.response.FullNameResponse;
-import ua.everybuy.routing.model.model.response.StatusResponse;
+import ua.everybuy.routing.model.dto.AuthUserInfoDto;
+import ua.everybuy.routing.model.dto.ShortUserInfoDto;
+import ua.everybuy.routing.model.dto.UserDto;
+import ua.everybuy.routing.model.response.FullNameResponse;
+import ua.everybuy.routing.model.response.StatusResponse;
 import ua.everybuy.routing.model.request.UpdateUserFullNameRequest;
 
 

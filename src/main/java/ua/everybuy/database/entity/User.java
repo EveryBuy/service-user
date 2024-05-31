@@ -21,7 +21,7 @@ public class User {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "user_full_name")
+    @Column(name = "user_full_name", length = 40)
     private String fullName;
 
     @Column(name = "user_photo_url")

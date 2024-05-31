@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.everybuy.buisnesslogic.service.PhotoService;
-import ua.everybuy.routing.model.model.response.ErrorResponse;
-import ua.everybuy.routing.model.model.response.StatusResponse;
+import ua.everybuy.routing.model.response.ErrorResponse;
+import ua.everybuy.routing.model.response.StatusResponse;
 
 import java.io.IOException;
 import java.security.Principal;
