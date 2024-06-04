@@ -37,12 +37,8 @@ public class UserService {
     }
 
     public StatusResponse getUserData(HttpServletRequest request) {
-        AuthUserInfoDto userInfo = extractAuthUserInfo(request);
-        if (!userRepository.existsById(userInfo.userId())){
-                    createUser(userInfo.userId());
-        }
-
-        UserDto userDTO = composeUserDTO(userInfo);
+        createUserIfNotExists(request);
+        UserDto userDTO = composeUserDTO(extractAuthUserInfo(request));
         return new StatusResponse(200, userDTO);
     }
 
@@ -84,5 +80,12 @@ public class UserService {
                 .status(200)
                 .data(new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()))
                 .build();
+    }
+
+    private void createUserIfNotExists(HttpServletRequest request){
+        AuthUserInfoDto userInfo = extractAuthUserInfo(request);
+        if (!userRepository.existsById(userInfo.userId())){
+            createUser(userInfo.userId());
+        }
     }
 }
