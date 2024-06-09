@@ -1,10 +1,14 @@
 package ua.everybuy.buisnesslogic.service;
 
+
+import org.springframework.beans.factory.annotation.Value;
 import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
-import ua.everybuy.errorhandling.exception.UserNotFoundException;
+import ua.everybuy.errorhandling.exception.impl.PasswordValidException;
+import ua.everybuy.errorhandling.exception.impl.UserAlreadyExistsException;
+import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.dto.UserDto;
@@ -26,10 +30,25 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RequestSenderService requestSenderService;
+    @Value("${service.password.value}")
+    private String servicePassword;
 
-    public void createUser(long userId) {
-        User user = new User(userId);
-        userRepository.save(user);
+    public StatusResponse createUser(HttpServletRequest request, long userId) {
+        if(userRepository.existsById(userId)) {
+            throw new UserAlreadyExistsException(userId);
+        }
+
+        if (checkPassword(request)){
+            User user = new User(userId);
+            userRepository.save(user);
+            return StatusResponse.builder()
+                    .status(200)
+                    .data(UserDto.builder()
+                            .userId(userId)
+                            .build())
+                    .build();
+        }
+        return null;
     }
 
     public User getUserById(long userId) {
@@ -37,7 +56,6 @@ public class UserService {
     }
 
     public StatusResponse getUserData(HttpServletRequest request) {
-        createUserIfNotExists(request);
         UserDto userDTO = composeUserDTO(extractAuthUserInfo(request));
         return new StatusResponse(200, userDTO);
     }
@@ -82,10 +100,12 @@ public class UserService {
                 .build();
     }
 
-    private void createUserIfNotExists(HttpServletRequest request){
-        AuthUserInfoDto userInfo = extractAuthUserInfo(request);
-        if (!userRepository.existsById(userInfo.userId())){
-            createUser(userInfo.userId());
+    private boolean checkPassword(HttpServletRequest request){
+        String servicePassword = request.getHeader("Service-Password");
+        if(!servicePassword.equals(this.servicePassword)){
+            throw new PasswordValidException();
         }
+        return true;
     }
+
 }

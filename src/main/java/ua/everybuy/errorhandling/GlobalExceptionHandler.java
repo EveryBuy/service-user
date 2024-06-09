@@ -9,9 +9,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
-import ua.everybuy.errorhandling.exception.FileFormatException;
-import ua.everybuy.errorhandling.exception.FileValidException;
-import ua.everybuy.errorhandling.exception.UserNotFoundException;
+import ua.everybuy.errorhandling.exception.CustomException;
+import ua.everybuy.errorhandling.exception.impl.FileFormatException;
+import ua.everybuy.errorhandling.exception.impl.FileValidException;
+import ua.everybuy.errorhandling.exception.impl.PasswordValidException;
+import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.response.ErrorResponse;
 import ua.everybuy.routing.model.response.MessageResponse;
 
@@ -21,32 +23,18 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+//    @ExceptionHandler({HttpStatusCodeException.class})
+//    public ResponseEntity<ErrorResponse> handleValidationExceptions(HttpStatusCodeException ex) {
+//        return ResponseEntity
+//                .badRequest()
+//                .body(new ErrorResponse(ex.getStatusCode().value(), new MessageResponse(ex.getMessage())));
+//    }
+
     @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(HttpStatusCodeException ex) {
+    public ResponseEntity<ErrorResponse> handleFileValidExceptions(CustomException ex) {
         return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse(ex.getStatusCode().value(), new MessageResponse(ex.getMessage())));
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> handleFileValidExceptions(FileValidException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), new MessageResponse(ex.getMessage())));
-    }
-
-    @ExceptionHandler({UserNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNoElementExceptions(UserNotFoundException ex) {
-        return ResponseEntity
-                .status(HttpStatusCode.valueOf(404))
-                .body(new ErrorResponse(404, new MessageResponse(ex.getMessage())));
-    }
-
-    @ExceptionHandler({FileFormatException.class})
-    public ResponseEntity<ErrorResponse> handleFileDownloadException(FileFormatException ex) {
-        return ResponseEntity
-                .status(HttpStatusCode.valueOf(415))
-                .body(new ErrorResponse(415, new MessageResponse(ex.getMessage())));
+                .status(ex.getStatusCode())
+                .body(new ErrorResponse(ex.getStatusCode(), new MessageResponse(ex.getMessage())));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

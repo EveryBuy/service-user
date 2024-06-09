@@ -59,5 +59,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getShortUserInfo(userId));
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<StatusResponse> saveUser(HttpServletRequest request, @RequestParam ("userId") long userId){
+        return ResponseEntity.status(200).body(userService.createUser(request, userId));
+    }
+
 
 }

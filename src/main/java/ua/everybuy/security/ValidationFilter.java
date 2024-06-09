@@ -74,7 +74,8 @@ public class ValidationFilter extends OncePerRequestFilter {
     public boolean shouldNotFilter(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/swagger")
                 || request.getRequestURI().startsWith("/v3")
-                || request.getRequestURI().startsWith("/user/short-info");
+                || request.getRequestURI().startsWith("/user/short-info")
+                || request.getRequestURI().startsWith("/user/create");
     }
 
 
