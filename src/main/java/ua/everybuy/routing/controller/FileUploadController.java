@@ -48,7 +48,7 @@ public class FileUploadController {
                     content = @Content(mediaType = "multipart/form-data",
                             schema = @Schema(type = "string", format = "binary")))
             @RequestParam(name = "photo")
-            MultipartFile photo
+            MultipartFile []photo
     ) throws IOException {
         return photoService.handlePhotoUpload(photo, principal);
     }

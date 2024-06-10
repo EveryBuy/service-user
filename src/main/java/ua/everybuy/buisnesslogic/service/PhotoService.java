@@ -26,9 +26,12 @@ public class PhotoService {
     @Value("${aws.bucket}")
     private String bucketName;
 
-    public StatusResponse handlePhotoUpload(MultipartFile photo, Principal principal) throws IOException {
-        isEmpty(photo);
-        isImage(photo);
+    public StatusResponse handlePhotoUpload(MultipartFile []photo, Principal principal) throws IOException {
+        if(photo.length > 1){
+            throw new FileValidException("You can't upload more than 1 photo");
+        }
+        isEmpty(photo[0]);
+        isImage(photo[0]);
 
         if (!s3Client.doesBucketExistV2(bucketName)) {
             throw new IOException("Bucket '" + bucketName + "' does not exist.");
@@ -37,10 +40,10 @@ public class PhotoService {
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(photo.getContentType());
-            metadata.setContentLength(photo.getSize());
+            metadata.setContentType(photo[0].getContentType());
+            metadata.setContentLength(photo[0].getSize());
 
-            s3Client.putObject(bucketName, principal.getName(), photo.getInputStream(), metadata);
+            s3Client.putObject(bucketName, principal.getName(), photo[0].getInputStream(), metadata);
             userService.updatePhotoUrl(photoUrl, Long.parseLong(principal.getName()));
 
         } catch (AmazonServiceException e) {
