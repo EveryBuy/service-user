@@ -1,5 +1,6 @@
 package ua.everybuy.buisnesslogic.util;
 
+
 import ua.everybuy.routing.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class RequestSenderService {
     @Value("${auth.service.url}")
     private String authServiceUrl;
 
+
     public ResponseEntity<ValidRequestDto> doRequest(HttpServletRequest request){
         final RestTemplate restTemplate = new RestTemplate();
         String authHeader = request.getHeader(AUTH_HEADER_PREFIX);
@@ -32,6 +34,15 @@ public class RequestSenderService {
                 HttpMethod.GET,
                 requestEntity,
                 ValidRequestDto.class);
+    }
+
+    public void sendEmptyRequestToWakeUpService(String url){
+        final RestTemplate restTemplate = new RestTemplate();
+        restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                String.class);
     }
 
     private static HttpEntity<HttpHeaders> getHttpHeadersHttpEntity(String authHeader) {
