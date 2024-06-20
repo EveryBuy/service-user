@@ -6,6 +6,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.routing.model.response.ErrorResponse;
 import ua.everybuy.routing.model.response.MessageResponse;
@@ -23,12 +25,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
 public class ValidationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final RequestSenderService requestSenderService;
+    private static final List<RequestMatcher> EXCLUDED_PATH_PATTERNS = List.of(
+            new AntPathRequestMatcher ("/swagger/**"),
+            new AntPathRequestMatcher ("/swagger-ui/**"),
+            new AntPathRequestMatcher ("/v3/**"),
+            new AntPathRequestMatcher ("/user/short-info"),
+            new AntPathRequestMatcher ("/user/create"),
+            new AntPathRequestMatcher ("/user/keep-alive")
+    );
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -71,12 +82,10 @@ public class ValidationFilter extends OncePerRequestFilter {
 
     }
     @Override
-    public boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/swagger")
-                || request.getRequestURI().startsWith("/v3")
-                || request.getRequestURI().startsWith("/user/short-info")
-                || request.getRequestURI().startsWith("/user/create")
-                || request.getRequestURI().startsWith("/user/keep-alive");
+    public boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return EXCLUDED_PATH_PATTERNS
+                .stream()
+                .anyMatch(pattern -> pattern.matches(request));
     }
 
 
