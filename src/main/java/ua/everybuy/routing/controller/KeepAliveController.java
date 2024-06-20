@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user/keep-alive")
 public class KeepAliveController {
-    @GetMapping
+    @GetMapping()
     public String keepAlive(){
         return "User service wake up";
     }
