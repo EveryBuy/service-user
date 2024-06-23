@@ -16,15 +16,15 @@ public class WakeUpService {
     private String authServiceUrl;
 
 
-//    @Scheduled(fixedRate = 6000)
-//    public void wakeUpAuthService(){
-//        System.out.println("I send wake up request to auth");
-//        requestSenderService.sendEmptyRequestToWakeUpAuthService(authServiceUrl);
-//    }
+    @Scheduled(fixedRate = 90000)
+    public void wakeUpAuthService(){
+        System.out.println("I send wake up request to auth service");
+        requestSenderService.sendEmptyRequestToWakeUpService(authServiceUrl);
+    }
 
     @Scheduled(fixedRate = 90000)
     public void wakeUpAdService(){
-        System.out.println("I send wake up request to add");
+        System.out.println("I send wake up request to ad service");
         requestSenderService.sendEmptyRequestToWakeUpService(adServiceUrl);
     }
 }
