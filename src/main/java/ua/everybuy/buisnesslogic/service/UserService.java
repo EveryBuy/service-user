@@ -38,17 +38,14 @@ public class UserService {
             throw new UserAlreadyExistsException(userId);
         }
 
-        if (checkPassword(request)){
+            validatePassword(request);
             User user = new User(userId);
-            userRepository.save(user);
+            long savedUserId = userRepository.save(user).getId();
+
             return StatusResponse.builder()
                     .status(200)
-                    .data(UserDto.builder()
-                            .userId(userId)
-                            .build())
+                    .data(new UserDto(savedUserId))
                     .build();
-        }
-        return null;
     }
 
     public User getUserById(long userId) {
@@ -100,12 +97,11 @@ public class UserService {
                 .build();
     }
 
-    private boolean checkPassword(HttpServletRequest request){
+    private void validatePassword(HttpServletRequest request){
         String servicePassword = request.getHeader("Service-Password");
         if(!servicePassword.equals(this.servicePassword)){
             throw new PasswordValidException();
         }
-        return true;
     }
 
 }

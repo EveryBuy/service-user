@@ -14,4 +14,8 @@ public class UserDto implements ResponseMarker {
     private String phone;
     private String email;
     private String userPhotoUrl;
+
+    public UserDto (long userId){
+        this.userId = userId;
+    }
 }
