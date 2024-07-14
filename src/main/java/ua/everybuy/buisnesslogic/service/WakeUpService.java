@@ -16,13 +16,13 @@ public class WakeUpService {
     private String authServiceUrl;
 
 
-    @Scheduled(fixedRate = 90000)
+    @Scheduled(fixedRate = 150000)
     public void wakeUpAuthService(){
         System.out.println("I send wake up request to auth service");
         requestSenderService.sendEmptyRequestToWakeUpService(authServiceUrl);
     }
 
-    @Scheduled(fixedRate = 90000)
+    @Scheduled(fixedRate = 150000)
     public void wakeUpAdService(){
         System.out.println("I send wake up request to ad service");
         requestSenderService.sendEmptyRequestToWakeUpService(adServiceUrl);
