@@ -2,6 +2,7 @@ package ua.everybuy.buisnesslogic.service;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
@@ -11,6 +12,7 @@ import ua.everybuy.errorhandling.exception.impl.UserAlreadyExistsException;
 import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
+import ua.everybuy.routing.model.response.UserCreatedResponse;
 import ua.everybuy.routing.model.dto.UserDto;
 import ua.everybuy.routing.model.response.FullNameResponse;
 import ua.everybuy.routing.model.response.StatusResponse;
@@ -34,35 +36,24 @@ public class UserService {
     private String servicePassword;
 
     public StatusResponse createUser(HttpServletRequest request, long userId) {
-        if(userRepository.existsById(userId)) {
+        validatePassword(request);
+
+        if (userRepository.existsById(userId)) {
             throw new UserAlreadyExistsException(userId);
         }
 
-            validatePassword(request);
-            User user = new User(userId);
-            long savedUserId = userRepository.save(user).getId();
+        User user = new User(userId);
+        long savedUserId = userRepository.save(user).getId();
 
-            return StatusResponse.builder()
-                    .status(200)
-                    .data(new UserDto(savedUserId))
-                    .build();
-    }
-
-    public User getUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        return new StatusResponse(HttpStatus.OK.value(), new UserCreatedResponse(savedUserId));
     }
 
     public StatusResponse getUserData(HttpServletRequest request) {
         UserDto userDTO = composeUserDTO(extractAuthUserInfo(request));
-        return new StatusResponse(200, userDTO);
+        return new StatusResponse(HttpStatus.OK.value(), userDTO);
     }
 
-    private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
-        return requestSenderService.extractValidResponse(request).getData();
-    }
-
-
-    public void updatePhotoUrl(String url, long userId){
+    public void updatePhotoUrl(String url, long userId) {
         User user = getUserById(userId);
         user.setUserPhotoUrl(url);
         user.onUpdate();
@@ -74,7 +65,23 @@ public class UserService {
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        return new StatusResponse(200, fullNameResponse);
+        return new StatusResponse(HttpStatus.OK.value(), fullNameResponse);
+    }
+
+    public StatusResponse getShortUserInfo(long userId) {
+        User user = getUserById(userId);
+        return new StatusResponse(HttpStatus.OK.value(),
+                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+    }
+
+    public void deleteUser(HttpServletRequest request, long userId) {
+        validatePassword(request);
+        User user = getUserById(userId);
+        userRepository.delete(user);
+    }
+
+    private User getUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
@@ -88,20 +95,14 @@ public class UserService {
                 .build();
     }
 
-    public StatusResponse getShortUserInfo(long userId){
-        User user = getUserById(userId);
-        return StatusResponse
-                .builder()
-                .status(200)
-                .data(new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()))
-                .build();
-    }
-
-    private void validatePassword(HttpServletRequest request){
+    private void validatePassword(HttpServletRequest request) {
         String servicePassword = request.getHeader("Service-Password");
-        if(!servicePassword.equals(this.servicePassword)){
+        if (!servicePassword.equals(this.servicePassword)) {
             throw new PasswordValidException();
         }
     }
 
+    private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
+        return requestSenderService.extractValidResponse(request).getData();
+    }
 }
