@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import ua.everybuy.buisnesslogic.service.UserService;
 import ua.everybuy.routing.model.response.ErrorResponse;
 import ua.everybuy.routing.model.response.StatusResponse;
@@ -64,5 +65,11 @@ public class UserController {
         return ResponseEntity.status(200).body(userService.createUser(request, userId));
     }
 
+    @DeleteMapping("/remove")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(HttpServletRequest request,
+                                                     @RequestParam(name = "userId") long userId){
+        userService.deleteUser(request, userId);
+    }
 
 }

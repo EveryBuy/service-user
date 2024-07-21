@@ -1,21 +1,15 @@
 package ua.everybuy.errorhandling;
 
-
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import ua.everybuy.errorhandling.exception.CustomException;
-import ua.everybuy.errorhandling.exception.impl.FileFormatException;
-import ua.everybuy.errorhandling.exception.impl.FileValidException;
-import ua.everybuy.errorhandling.exception.impl.PasswordValidException;
-import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.response.ErrorResponse;
 import ua.everybuy.routing.model.response.MessageResponse;
 
@@ -24,13 +18,12 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-//    @ExceptionHandler({HttpStatusCodeException.class})
-//    public ResponseEntity<ErrorResponse> handleValidationExceptions(HttpStatusCodeException ex) {
-//        return ResponseEntity
-//                .badRequest()
-//                .body(new ErrorResponse(ex.getStatusCode().value(), new MessageResponse(ex.getMessage())));
-//    }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), new MessageResponse(ex.getMessage())));
+    }
 
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ErrorResponse> handleFileValidExceptions(CustomException ex) {
