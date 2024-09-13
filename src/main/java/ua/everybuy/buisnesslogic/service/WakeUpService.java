@@ -15,7 +15,6 @@ public class WakeUpService {
     @Value("${auth.service.wakeup.url}")
     private String authServiceUrl;
 
-
     @Scheduled(fixedRate = 150000)
     public void wakeUpAuthService(){
         System.out.println("I send wake up request to auth service");
