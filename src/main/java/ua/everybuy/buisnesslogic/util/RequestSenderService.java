@@ -1,6 +1,7 @@
 package ua.everybuy.buisnesslogic.util;
 
 
+import ua.everybuy.routing.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,16 @@ public class RequestSenderService {
                 url,
                 HttpMethod.GET,
                 null,
+                String.class);
+    }
+
+    public void sendInfoAboutChange(String url, ShortUserInfoDto userInfoDto){
+        final RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<ShortUserInfoDto> requestEntity = new HttpEntity<>(userInfoDto);
+        restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
                 String.class);
     }
 
