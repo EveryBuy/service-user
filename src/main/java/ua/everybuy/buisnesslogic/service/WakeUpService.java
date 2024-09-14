@@ -15,13 +15,13 @@ public class WakeUpService {
     @Value("${auth.service.wakeup.url}")
     private String authServiceUrl;
 
-    @Scheduled(fixedRate = 150000)
+    @Scheduled(fixedRate = 150_000)
     public void wakeUpAuthService(){
         System.out.println("I send wake up request to auth service");
         requestSenderService.sendEmptyRequestToWakeUpService(authServiceUrl);
     }
 
-    @Scheduled(fixedRate = 150000)
+    @Scheduled(fixedRate = 150_000)
     public void wakeUpAdService(){
         System.out.println("I send wake up request to ad service");
         requestSenderService.sendEmptyRequestToWakeUpService(adServiceUrl);

@@ -58,6 +58,8 @@ public class UserService {
         user.setUserPhotoUrl(url);
         user.onUpdate();
         userRepository.save(user);
+        requestSenderService.sendInfoAboutChange("https://service-user-qxpc.onrender.com/chat/user/change",
+                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
     }
 
     public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
@@ -65,6 +67,8 @@ public class UserService {
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
+        requestSenderService.sendInfoAboutChange("https://service-user-qxpc.onrender.com/chat/user/change",
+                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
         return new StatusResponse(HttpStatus.OK.value(), fullNameResponse);
     }
 
