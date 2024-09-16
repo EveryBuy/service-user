@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import ua.everybuy.routing.model.response.StatusResponse;
 
 import java.net.http.HttpHeaders;
 
@@ -48,7 +49,8 @@ public class RequestSenderService {
 
     public void sendInfoAboutChange(String url, ShortUserInfoDto userInfoDto){
         final RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<ShortUserInfoDto> requestEntity = new HttpEntity<>(userInfoDto);
+        StatusResponse statusResponse = new StatusResponse(200, userInfoDto);
+        HttpEntity<StatusResponse> requestEntity = new HttpEntity<>(statusResponse);
         restTemplate.exchange(
                 url,
                 HttpMethod.POST,
