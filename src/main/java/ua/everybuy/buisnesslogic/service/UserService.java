@@ -67,7 +67,7 @@ public class UserService {
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        requestSenderService.sendInfoAboutChange("https://service-user-qxpc.onrender.com/chat/user/change",
+        requestSenderService.sendInfoAboutChange("https://service-chat-t47s.onrender.com/chat/user/change",
                 new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
         return new StatusResponse(HttpStatus.OK.value(), fullNameResponse);
     }
