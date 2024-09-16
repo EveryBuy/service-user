@@ -55,7 +55,7 @@ public class RequestSenderService {
                 url,
                 HttpMethod.POST,
                 requestEntity,
-                String.class);
+                StatusResponse.class);
     }
 
     private static HttpEntity<HttpHeaders> getHttpHeadersHttpEntity(String authHeader) {
