@@ -1,6 +1,7 @@
 package ua.everybuy.buisnesslogic.util;
 
 
+import org.springframework.web.client.HttpClientErrorException;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.dto.ValidRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,11 +52,15 @@ public class RequestSenderService {
         final RestTemplate restTemplate = new RestTemplate();
         StatusResponse statusResponse = new StatusResponse(200, userInfoDto);
         HttpEntity<StatusResponse> requestEntity = new HttpEntity<>(statusResponse);
-        restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity,
-                String.class);
+        try{
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class);
+        }catch (HttpClientErrorException ex){
+            System.out.println("data changed");
+        }
     }
 
     private static HttpEntity<HttpHeaders> getHttpHeadersHttpEntity(String authHeader) {
