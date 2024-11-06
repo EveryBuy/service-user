@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import ua.everybuy.errorhandling.exception.CustomException;
-import ua.everybuy.routing.model.response.ErrorResponse;
-import ua.everybuy.routing.model.response.MessageResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.ErrorResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.MessageResponse;
 
 import java.io.IOException;
 import java.util.List;

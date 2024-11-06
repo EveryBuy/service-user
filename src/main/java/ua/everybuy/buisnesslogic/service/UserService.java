@@ -12,10 +12,11 @@ import ua.everybuy.errorhandling.exception.impl.UserAlreadyExistsException;
 import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
-import ua.everybuy.routing.model.response.UserCreatedResponse;
+import ua.everybuy.routing.model.mapper.UserMapper;
+import ua.everybuy.routing.model.response.resposedataimpl.UserCreatedResponse;
 import ua.everybuy.routing.model.dto.UserDto;
-import ua.everybuy.routing.model.response.FullNameResponse;
-import ua.everybuy.routing.model.response.StatusResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.FullNameResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.StatusResponse;
 import ua.everybuy.routing.model.request.UpdateUserFullNameRequest;
 
 
@@ -32,8 +33,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RequestSenderService requestSenderService;
+    private final UserMapper userMapper;
     @Value("${service.password.value}")
     private String servicePassword;
+    @Value("${chat.service.change.info.url}")
+    private String chatServiceChangeUserInfoUrl;
 
     public StatusResponse createUser(HttpServletRequest request, long userId) {
         validatePassword(request);
@@ -49,7 +53,16 @@ public class UserService {
     }
 
     public StatusResponse getUserData(HttpServletRequest request) {
-        UserDto userDTO = composeUserDTO(extractAuthUserInfo(request));
+        UserDto userDTO;
+        // temporally solution in the case when userId not found, because we also auth-service trust))
+        try{
+             userDTO = composeUserDTO(extractAuthUserInfo(request));
+        }catch (UserNotFoundException ex){
+            User user = new User(requestSenderService.doRequest(request).getBody().getData().userId());
+            userRepository.save(user);
+            userDTO = composeUserDTO(extractAuthUserInfo(request));
+        }
+
         return new StatusResponse(HttpStatus.OK.value(), userDTO);
     }
 
@@ -58,8 +71,7 @@ public class UserService {
         user.setUserPhotoUrl(url);
         user.onUpdate();
         userRepository.save(user);
-        requestSenderService.sendInfoAboutChange("https://service-user-qxpc.onrender.com/chat/user/change",
-                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+        sendInfoAboutChangesToChatService(user);
     }
 
     public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
@@ -67,8 +79,7 @@ public class UserService {
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
-        requestSenderService.sendInfoAboutChange("https://service-chat-t47s.onrender.com/chat/user/change",
-                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+        sendInfoAboutChangesToChatService(user);
         return new StatusResponse(HttpStatus.OK.value(), fullNameResponse);
     }
 
@@ -90,13 +101,7 @@ public class UserService {
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
         User user = getUserById(userInfo.userId());
-        return UserDto.builder()
-                .userId(user.getId())
-                .fullName(user.getFullName())
-                .userPhotoUrl(user.getUserPhotoUrl())
-                .phone(userInfo.phoneNumber())
-                .email(userInfo.email())
-                .build();
+        return userMapper.convertUserToDto(userInfo, user);
     }
 
     private void validatePassword(HttpServletRequest request) {
@@ -108,5 +113,10 @@ public class UserService {
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
         return requestSenderService.extractValidResponse(request).getData();
+    }
+
+    private void sendInfoAboutChangesToChatService(User user){
+        requestSenderService.sendInfoAboutChange(chatServiceChangeUserInfoUrl,
+                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
     }
 }

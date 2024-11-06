@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import ua.everybuy.routing.model.response.StatusResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.StatusResponse;
 
 import java.net.http.HttpHeaders;
 

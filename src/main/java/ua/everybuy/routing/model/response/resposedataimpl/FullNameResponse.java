@@ -1,4 +1,4 @@
-package ua.everybuy.routing.model.response;
+package ua.everybuy.routing.model.response.resposedataimpl;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +8,6 @@ import ua.everybuy.routing.model.response.ResponseMarker;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserCreatedResponse implements ResponseMarker {
-    private long id;
+public class FullNameResponse implements ResponseMarker {
+    private String fullName;
 }

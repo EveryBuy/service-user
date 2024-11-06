@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.everybuy.errorhandling.exception.impl.FileFormatException;
 import ua.everybuy.errorhandling.exception.impl.FileValidException;
-import ua.everybuy.routing.model.response.PhotoUrlResponse;
-import ua.everybuy.routing.model.response.StatusResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.PhotoUrlResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.StatusResponse;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
