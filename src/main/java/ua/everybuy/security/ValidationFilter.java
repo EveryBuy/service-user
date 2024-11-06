@@ -9,8 +9,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import ua.everybuy.buisnesslogic.util.RequestSenderService;
-import ua.everybuy.routing.model.response.ErrorResponse;
-import ua.everybuy.routing.model.response.MessageResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.ErrorResponse;
+import ua.everybuy.routing.model.response.resposedataimpl.MessageResponse;
 import ua.everybuy.routing.model.dto.ValidRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -25,7 +25,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +38,8 @@ public class ValidationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher ("/user/short-info"),
             new AntPathRequestMatcher ("/user/create"),
             new AntPathRequestMatcher ("/user/remove"),
+            new AntPathRequestMatcher ("/user/send-news"),
+            new AntPathRequestMatcher ("/user/add-subscriber"),
             new AntPathRequestMatcher ("/user/keep-alive")
     );
 

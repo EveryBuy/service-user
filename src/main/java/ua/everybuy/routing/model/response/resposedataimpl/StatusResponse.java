@@ -1,6 +1,7 @@
-package ua.everybuy.routing.model.response;
+package ua.everybuy.routing.model.response.resposedataimpl;
 
 import lombok.*;
+import ua.everybuy.routing.model.response.ResponseMarker;
 
 @Getter
 @Setter
