@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ua.everybuy.database.entity.Subscriber;
 import ua.everybuy.database.repository.SubscriberRepository;
 import ua.everybuy.errorhandling.exception.impl.EmailAlreadyExistsException;
+import ua.everybuy.errorhandling.exception.impl.EmailNoStubscribedException;
 import ua.everybuy.routing.model.request.SubscriberRequest;
 import ua.everybuy.routing.model.response.resposedataimpl.StatusResponse;
 import ua.everybuy.routing.model.response.resposedataimpl.SubscriberResponse;
@@ -23,6 +24,12 @@ public class SubscriberService {
         emailAlreadyExists(email);
         saveSubscriber(email);
         return new StatusResponse(HttpStatus.CREATED.value(), new SubscriberResponse(email));
+    }
+
+    public void deleteSubscribe(SubscriberRequest subscriberRequest){
+        String email = subscriberRequest.getEmail();
+        Subscriber subscriber = findSubscriberByEmail(email).orElseThrow(() -> new EmailNoStubscribedException(email));
+        subscriberRepository.delete(subscriber);
     }
 
     public List<Subscriber> findAll(){
