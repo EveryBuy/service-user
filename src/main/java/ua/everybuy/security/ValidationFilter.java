@@ -40,6 +40,7 @@ public class ValidationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher ("/user/remove"),
             new AntPathRequestMatcher ("/user/send-news"),
             new AntPathRequestMatcher ("/user/add-subscriber"),
+            new AntPathRequestMatcher ("/user/delete-subscriber"),
             new AntPathRequestMatcher ("/user/keep-alive")
     );
 

@@ -20,4 +20,10 @@ public class SubscriberController {
     public StatusResponse addSubscriber(@RequestBody @Valid SubscriberRequest request){
         return subscriberService.addEmailToMailing(request);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/delete-subscriber")
+    public void deleteSubscriber(@RequestBody @Valid SubscriberRequest request){
+        subscriberService.deleteSubscribe(request);
+    }
 }
