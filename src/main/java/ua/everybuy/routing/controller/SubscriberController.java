@@ -22,7 +22,7 @@ public class SubscriberController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/delete-subscriber")
+    @DeleteMapping("/delete-subscriber")
     public void deleteSubscriber(@RequestBody @Valid SubscriberRequest request){
         subscriberService.deleteSubscribe(request);
     }
