@@ -56,16 +56,16 @@ public class PhotoService {
         return new StatusResponse(200, new PhotoUrlResponse(photoUrl));
     }
 
-    private void isImage(MultipartFile file) throws IOException {
-        if (ImageIO.read(file.getInputStream()) == null) {
-            throw new FileFormatException("File should be image");
+        private void isImage(MultipartFile file) throws IOException {
+            if (ImageIO.read(file.getInputStream()) == null) {
+                throw new FileFormatException("File should be image");
+            }
         }
-    }
 
-    private void isEmpty(MultipartFile file) {
-        if (file == null || file.isEmpty()){
-            throw new FileValidException("File should be not null");
+        private void isEmpty(MultipartFile file) {
+            if (file == null || file.isEmpty()){
+                throw new FileValidException("File should be not null");
+            }
         }
-    }
 
 }

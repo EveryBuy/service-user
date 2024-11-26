@@ -1,6 +1,7 @@
 package ua.everybuy.buisnesslogic.util;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.HttpClientErrorException;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.dto.ValidRequestDto;
@@ -20,6 +21,7 @@ import java.net.http.HttpHeaders;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RequestSenderService {
     private final static String AUTH_HEADER_PREFIX = "Authorization";
 
@@ -41,11 +43,12 @@ public class RequestSenderService {
 
     public void sendEmptyRequestToWakeUpService(String url){
         final RestTemplate restTemplate = new RestTemplate();
-        restTemplate.exchange(
+        ResponseEntity<String> exchange = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
                 String.class);
+        log.info(exchange.getBody());
     }
 
     public void sendInfoAboutChange(String url, ShortUserInfoDto userInfoDto){

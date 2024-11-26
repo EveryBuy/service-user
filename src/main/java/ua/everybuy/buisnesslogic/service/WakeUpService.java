@@ -14,6 +14,8 @@ public class WakeUpService {
     private String adServiceUrl;
     @Value("${auth.service.wakeup.url}")
     private String authServiceUrl;
+    @Value("${chat.service.wakeup.url}")
+    private String chatServiceUrl;
 
     @Scheduled(fixedRate = 150_000)
     public void wakeUpAuthService(){
@@ -25,5 +27,11 @@ public class WakeUpService {
     public void wakeUpAdService(){
         System.out.println("I send wake up request to ad service");
         requestSenderService.sendEmptyRequestToWakeUpService(adServiceUrl);
+    }
+
+    @Scheduled(fixedRate = 150_000)
+    public void wakeUpChatService(){
+        System.out.println("I send wake up request to chat service");
+        requestSenderService.sendEmptyRequestToWakeUpService(chatServiceUrl);
     }
 }
