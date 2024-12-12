@@ -12,6 +12,8 @@ public class WakeUpService {
     private final RequestSenderService requestSenderService;
     @Value("${ad.service.wakeup.url}")
     private String adServiceUrl;
+    @Value("${api.level.service.wakeup.url}")
+    private String apiLevelServiceUrl;
     @Value("${auth.service.wakeup.url}")
     private String authServiceUrl;
     @Value("${chat.service.wakeup.url}")
@@ -33,5 +35,11 @@ public class WakeUpService {
     public void wakeUpChatService(){
         System.out.println("I send wake up request to chat service");
         requestSenderService.sendEmptyRequestToWakeUpService(chatServiceUrl);
+    }
+
+    @Scheduled(fixedRate = 150_000)
+    public void wakeUpApiLevelService(){
+        System.out.println("I send wake up request to apiLevel service");
+        requestSenderService.sendEmptyRequestToWakeUpService(apiLevelServiceUrl);
     }
 }
