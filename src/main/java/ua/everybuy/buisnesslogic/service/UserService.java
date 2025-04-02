@@ -34,6 +34,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RequestSenderService requestSenderService;
     private final UserMapper userMapper;
+
     @Value("${service.password.value}")
     private String servicePassword;
     @Value("${chat.service.change.info.url}")

@@ -1,5 +1,6 @@
 package ua.everybuy.routing.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,22 @@ public class SubscriberController {
         return subscriberService.addEmailToMailing(request);
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/add-user-to-subscribe")
+    public StatusResponse addSubscriber(HttpServletRequest request){
+        return subscriberService.addEmailToMailing(request);
+    }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete-subscriber")
     public void deleteSubscriber(@RequestBody @Valid SubscriberRequest request){
-        subscriberService.deleteSubscribe(request);
+        subscriberService.deleteSubscriber(request);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/delete-user-from-subscribe")
+    public void deleteSubscriber(HttpServletRequest request){
+        subscriberService.deleteUserFromSubscribe(request);
     }
 }
