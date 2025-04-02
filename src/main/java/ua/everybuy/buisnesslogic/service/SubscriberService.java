@@ -1,8 +1,10 @@
 package ua.everybuy.buisnesslogic.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.Subscriber;
 import ua.everybuy.database.repository.SubscriberRepository;
 import ua.everybuy.errorhandling.exception.impl.EmailAlreadyExistsException;
@@ -18,18 +20,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SubscriberService {
     private final SubscriberRepository subscriberRepository;
+    private final RequestSenderService requestSenderService;
 
     public StatusResponse addEmailToMailing(SubscriberRequest subscriberRequest){
-        String email = subscriberRequest.getEmail();
-        emailAlreadyExists(email);
-        saveSubscriber(email);
-        return new StatusResponse(HttpStatus.CREATED.value(), new SubscriberResponse(email));
+        return prepareStatusResponseForAddingToMailing(subscriberRequest.getEmail());
     }
 
-    public void deleteSubscribe(SubscriberRequest subscriberRequest){
+    public StatusResponse addEmailToMailing(HttpServletRequest httpServletRequest){
+        return prepareStatusResponseForAddingToMailing(extractEmailFromRequest(httpServletRequest));
+    }
+
+    public void deleteSubscriber(SubscriberRequest subscriberRequest){
         String email = subscriberRequest.getEmail();
-        Subscriber subscriber = findSubscriberByEmail(email).orElseThrow(() -> new EmailNoStubscribedException(email));
-        subscriberRepository.delete(subscriber);
+        deleteSubscribe(email);
+    }
+
+    public void deleteUserFromSubscribe(HttpServletRequest request){
+        deleteSubscribe(extractEmailFromRequest(request));
     }
 
     public List<Subscriber> findAll(){
@@ -51,5 +58,21 @@ public class SubscriberService {
             throw new EmailAlreadyExistsException(email);
         }
     }
+
+    private StatusResponse prepareStatusResponseForAddingToMailing(String email){
+        emailAlreadyExists(email);
+        saveSubscriber(email);
+        return new StatusResponse(HttpStatus.CREATED.value(), new SubscriberResponse(email));
+    }
+
+    private String extractEmailFromRequest(HttpServletRequest request){
+        return requestSenderService.doRequest(request).getBody().getData().email();
+    }
+
+    private void deleteSubscribe(String email){
+        Subscriber subscriber = findSubscriberByEmail(email).orElseThrow(() -> new EmailNoStubscribedException(email));
+        subscriberRepository.delete(subscriber);
+    }
+
 
 }
