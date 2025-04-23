@@ -56,10 +56,10 @@ public class UserService {
     public StatusResponse getUserData(HttpServletRequest request) {
         UserDto userDTO;
         // temporally solution in the case when userId not found, because we also auth-service trust))
-        try{
-             userDTO = composeUserDTO(extractAuthUserInfo(request));
-        }catch (UserNotFoundException ex){
-            User user = new User(requestSenderService.doRequest(request).getBody().getData().userId());
+        try {
+            userDTO = composeUserDTO(extractAuthUserInfo(request));
+        } catch (UserNotFoundException ex) {
+            User user = new User(extractAuthUserInfo(request).userId());
             userRepository.save(user);
             userDTO = composeUserDTO(extractAuthUserInfo(request));
         }
@@ -67,8 +67,8 @@ public class UserService {
         return new StatusResponse(HttpStatus.OK.value(), userDTO);
     }
 
-    public void updatePhotoUrl(String url, long userId) {
-        User user = getUserById(userId);
+    public void updatePhotoUrl(String url, Principal principal) {
+        User user = getOrCreateUser(principal);
         user.setUserPhotoUrl(url);
         user.onUpdate();
         userRepository.save(user);
@@ -76,7 +76,7 @@ public class UserService {
     }
 
     public StatusResponse updateUserFullName(UpdateUserFullNameRequest updateUserFullNameRequest, Principal principal) {
-        User user = getUserById(Long.parseLong(principal.getName()));
+        User user = getOrCreateUser(principal);
         user.setFullName(updateUserFullNameRequest.fullName());
         userRepository.save(user);
         FullNameResponse fullNameResponse = new FullNameResponse(user.getFullName());
@@ -116,8 +116,28 @@ public class UserService {
         return requestSenderService.extractValidResponse(request).getData();
     }
 
-    private void sendInfoAboutChangesToChatService(User user){
+    private void sendInfoAboutChangesToChatService(User user) {
         requestSenderService.sendInfoAboutChange(chatServiceChangeUserInfoUrl,
                 new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+    }
+
+    private void saveUserWhenNotExist(long userId) {
+        if (!userRepository.existsById(userId)) {
+            saveUser(userId);
+        }
+    }
+
+    private void saveUser(long userId) {
+        userRepository.save(new User(userId));
+    }
+
+    private long extractUserId(Principal principal) {
+        return Long.parseLong(principal.getName());
+    }
+
+    private User getOrCreateUser(Principal principal) {
+        long userId = extractUserId(principal);
+        saveUserWhenNotExist(userId);
+        return getUserById(userId);
     }
 }

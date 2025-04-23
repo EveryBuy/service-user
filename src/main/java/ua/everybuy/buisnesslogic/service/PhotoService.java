@@ -44,7 +44,7 @@ public class PhotoService {
             metadata.setContentLength(photo[0].getSize());
 
             s3Client.putObject(bucketName, principal.getName(), photo[0].getInputStream(), metadata);
-            userService.updatePhotoUrl(photoUrl, Long.parseLong(principal.getName()));
+            userService.updatePhotoUrl(photoUrl, principal);
 
         } catch (AmazonServiceException e) {
             throw new IOException("Failed to upload photos to S3: " + e.getErrorMessage(), e);
