@@ -7,7 +7,6 @@ import ua.everybuy.buisnesslogic.util.RequestSenderService;
 import ua.everybuy.database.entity.User;
 import ua.everybuy.database.repository.UserRepository;
 
-import ua.everybuy.errorhandling.exception.impl.PasswordValidException;
 import ua.everybuy.errorhandling.exception.impl.UserAlreadyExistsException;
 import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
@@ -34,14 +33,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final RequestSenderService requestSenderService;
     private final UserMapper userMapper;
+    private final InternalValidateService validateService;
 
-    @Value("${service.password.value}")
-    private String servicePassword;
     @Value("${chat.service.change.info.url}")
     private String chatServiceChangeUserInfoUrl;
 
     public StatusResponse createUser(HttpServletRequest request, long userId) {
-        validatePassword(request);
+        validateService.validatePassword(request);
 
         if (userRepository.existsById(userId)) {
             throw new UserAlreadyExistsException(userId);
@@ -91,25 +89,18 @@ public class UserService {
     }
 
     public void deleteUser(HttpServletRequest request, long userId) {
-        validatePassword(request);
+        validateService.validatePassword(request);
         User user = getUserById(userId);
         userRepository.delete(user);
     }
 
-    private User getUserById(long userId) {
+    public User getUserById(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     private UserDto composeUserDTO(AuthUserInfoDto userInfo) {
         User user = getUserById(userInfo.userId());
         return userMapper.convertUserToDto(userInfo, user);
-    }
-
-    private void validatePassword(HttpServletRequest request) {
-        String servicePassword = request.getHeader("Service-Password");
-        if (!servicePassword.equals(this.servicePassword)) {
-            throw new PasswordValidException();
-        }
     }
 
     private AuthUserInfoDto extractAuthUserInfo(HttpServletRequest request) {
@@ -139,5 +130,9 @@ public class UserService {
         long userId = extractUserId(principal);
         saveUserWhenNotExist(userId);
         return getUserById(userId);
+    }
+
+    public void updateUser(User user){
+        userRepository.save(user);
     }
 }

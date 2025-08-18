@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import ua.everybuy.buisnesslogic.service.UserActivityService;
 import ua.everybuy.buisnesslogic.service.UserService;
 import ua.everybuy.routing.model.response.resposedataimpl.ErrorResponse;
 import ua.everybuy.routing.model.response.resposedataimpl.StatusResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.everybuy.routing.model.request.UpdateUserFullNameRequest;
 
 import java.security.Principal;
+import java.util.Date;
 
 
 @RestController
@@ -26,6 +28,7 @@ import java.security.Principal;
 @Tag(name = "User service", description = "Endpoints for profile management and user data manipulation")
 public class UserController {
     private final UserService userService;
+    private final UserActivityService userActivityService;
 
     @Operation(summary = "Get user data", description = "Fetch the user data based on the request")
     @ApiResponses(value = {
@@ -69,6 +72,12 @@ public class UserController {
     public void deleteUser(HttpServletRequest request,
                                                      @RequestParam(name = "userId") long userId){
         userService.deleteUser(request, userId);
+    }
+
+    @PatchMapping("/{userId}/activity")
+    @ResponseStatus(HttpStatus.OK)
+    public Date updateUsersActivityDate(@PathVariable long userId, HttpServletRequest request){
+        return userActivityService.changeLastUsersActivityTime(userId, request);
     }
 
 }
