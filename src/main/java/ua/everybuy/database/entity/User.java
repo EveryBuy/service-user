@@ -45,6 +45,7 @@ public class User {
     @PrePersist
     public void onCreate(){
         creationDate = DateService.setDateFormat(new Date());
+        lastActivityDate = DateService.setDateFormat(new Date());
     }
 
     @PreUpdate

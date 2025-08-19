@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Date;
 
 
 @Service
@@ -34,6 +35,7 @@ public class UserService {
     private final RequestSenderService requestSenderService;
     private final UserMapper userMapper;
     private final InternalValidateService validateService;
+    private final UserActivityService userActivityService;
 
     @Value("${chat.service.change.info.url}")
     private String chatServiceChangeUserInfoUrl;
@@ -85,7 +87,8 @@ public class UserService {
     public StatusResponse getShortUserInfo(long userId) {
         User user = getUserById(userId);
         return new StatusResponse(HttpStatus.OK.value(),
-                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+                new ShortUserInfoDto(user.getId(), user.getFullName()
+                        , user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user)));
     }
 
     public void deleteUser(HttpServletRequest request, long userId) {
@@ -109,7 +112,8 @@ public class UserService {
 
     private void sendInfoAboutChangesToChatService(User user) {
         requestSenderService.sendInfoAboutChange(chatServiceChangeUserInfoUrl,
-                new ShortUserInfoDto(user.getId(), user.getFullName(), user.getUserPhotoUrl()));
+                new ShortUserInfoDto(user.getId(), user.getFullName(),
+                        user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user)));
     }
 
     private void saveUserWhenNotExist(long userId) {
@@ -132,7 +136,11 @@ public class UserService {
         return getUserById(userId);
     }
 
-    public void updateUser(User user){
+    public Date changeUserActivityDate(long userId, HttpServletRequest request){
+        validateService.validatePassword(request);
+        User user = getUserById(userId);
+        user.setLastActivityDate(new Date());
         userRepository.save(user);
+        return user.getLastActivityDate();
     }
 }

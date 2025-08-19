@@ -12,4 +12,5 @@ public class ShortUserInfoDto implements ResponseMarker {
     private long userId;
     private String fullName;
     private String photoUrl;
+    private boolean isOnline;
 }
