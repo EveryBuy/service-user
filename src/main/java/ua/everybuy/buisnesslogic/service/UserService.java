@@ -88,7 +88,8 @@ public class UserService {
         User user = getUserById(userId);
         return new StatusResponse(HttpStatus.OK.value(),
                 new ShortUserInfoDto(user.getId(), user.getFullName()
-                        , user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user)));
+                        , user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user),
+                        userActivityService.getInfoAboutLastActivity(user)));
     }
 
     public void deleteUser(HttpServletRequest request, long userId) {
@@ -113,7 +114,8 @@ public class UserService {
     private void sendInfoAboutChangesToChatService(User user) {
         requestSenderService.sendInfoAboutChange(chatServiceChangeUserInfoUrl,
                 new ShortUserInfoDto(user.getId(), user.getFullName(),
-                        user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user)));
+                        user.getUserPhotoUrl(), userActivityService.getUserActivityStatus(user),
+                        userActivityService.getInfoAboutLastActivity(user)));
     }
 
     private void saveUserWhenNotExist(long userId) {
