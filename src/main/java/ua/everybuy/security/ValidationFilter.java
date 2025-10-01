@@ -37,6 +37,7 @@ public class ValidationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher ("/v3/**"),
             new AntPathRequestMatcher ("/user/short-info"),
             new AntPathRequestMatcher ("/user/create"),
+            new AntPathRequestMatcher ("/user/create-from-google"),
             new AntPathRequestMatcher ("/user/remove"),
             new AntPathRequestMatcher ("/user/send-news"),
             new AntPathRequestMatcher ("/user/add-subscriber"),

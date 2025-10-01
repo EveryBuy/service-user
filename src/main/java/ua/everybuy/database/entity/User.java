@@ -57,5 +57,11 @@ public class User {
         this.id = id;
     }
 
+    public User (Long id, String fullName, String userPhotoUrl){
+        this.id = id;
+        this.fullName = fullName;
+        this.userPhotoUrl = userPhotoUrl;
+    }
+
 }
 

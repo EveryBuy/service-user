@@ -12,6 +12,7 @@ import ua.everybuy.errorhandling.exception.impl.UserNotFoundException;
 import ua.everybuy.routing.model.dto.AuthUserInfoDto;
 import ua.everybuy.routing.model.dto.ShortUserInfoDto;
 import ua.everybuy.routing.model.mapper.UserMapper;
+import ua.everybuy.routing.model.request.CreateUserRequest;
 import ua.everybuy.routing.model.response.resposedataimpl.UserCreatedResponse;
 import ua.everybuy.routing.model.dto.UserDto;
 import ua.everybuy.routing.model.response.resposedataimpl.FullNameResponse;
@@ -41,16 +42,22 @@ public class UserService {
     private String chatServiceChangeUserInfoUrl;
 
     public StatusResponse createUser(HttpServletRequest request, long userId) {
-        validateService.validatePassword(request);
-
-        if (userRepository.existsById(userId)) {
-            throw new UserAlreadyExistsException(userId);
-        }
+        checkCreationPossibility(request, userId);
 
         User user = new User(userId);
         long savedUserId = userRepository.save(user).getId();
 
         return new StatusResponse(HttpStatus.OK.value(), new UserCreatedResponse(savedUserId));
+    }
+
+    public StatusResponse createUserFromGoogle(HttpServletRequest request, CreateUserRequest createUserRequest){
+        long userId = createUserRequest.userId();
+        checkCreationPossibility(request, userId);
+        String userName = createUserRequest.userName();
+        String userPhotoUrl = createUserRequest.userPhotoUrl();
+        User user = new User(userId, userName, userPhotoUrl);
+        return new StatusResponse(HttpStatus.OK.value(),
+                new UserCreatedResponse(userRepository.save(user).getId()));
     }
 
     public StatusResponse getUserData(HttpServletRequest request) {
@@ -144,5 +151,12 @@ public class UserService {
         user.setLastActivityDate(new Date());
         userRepository.save(user);
         return user.getLastActivityDate();
+    }
+
+    private void checkCreationPossibility(HttpServletRequest request, long userId){
+        validateService.validatePassword(request);
+        if(userRepository.existsById(userId)){
+            throw new UserAlreadyExistsException(userId);
+        }
     }
 }
